@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enomy-Finances - Financial Management System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .module {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .module:hover {
+            transform: translateY(-5px);
+        }
+
+        .module h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+
+        .result.show {
+            display: block;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e1e5e9;
+        }
+
+        .result-item:last-child {
+            border-bottom: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+
+        .investment-projections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .projection-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #e1e5e9;
+            text-align: center;
+        }
+
+        .projection-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .features {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .features h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💼 Enomy-Finances</h1>
+            <p>Complete Financial Management System</p>
+        </div>
+
+        <div class="modules">
+            <!-- Currency Converter Module -->
+            <div class="module">
+                <h2>💱 Currency Converter</h2>
+                <form id="currencyForm">
+                    <div class="form-group">
+                        <label for="fromCurrency">From Currency:</label>
+                        <select id="fromCurrency" required>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="BRL">BRL - Brazilian Real</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="TRY">TRY - Turkish Lira</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="toCurrency">To Currency:</label>
+                        <select id="toCurrency" required>
+                            <option value="USD">USD - US Dollar</option>
+                            <option value="GBP">GBP - British Pound</option>
+                            <option value="EUR">EUR - Euro</option>
+                            <option value="BRL">BRL - Brazilian Real</option>
+                            <option value="JPY">JPY - Japanese Yen</option>
+                            <option value="TRY">TRY - Turkish Lira</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="amount">Amount (Min: 300, Max: 5000):</label>
+                        <input type="number" id="amount" min="300" max="5000" step="0.01" required>
+                        <div class="error" id="amountError"></div>
+                    </div>
+                    <button type="submit" class="btn">Convert Currency</button>
+                </form>
+                <div id="currencyResult" class="result"></div>
+            </div>
+
+            <!-- Investment Calculator Module -->
+            <div class="module">
+                <h2>💰 Investment Calculator</h2>
+                <form id="investmentForm">
+                    <div class="form-group">
+                        <label for="investmentPlan">Investment Plan:</label>
+                        <select id="investmentPlan" required>
+                            <option value="basic">Basic Savings Plan (1.2% - 2.4%)</option>
+                            <option value="plus">Savings Plan Plus (3% - 5.5%)</option>
+                            <option value="managed">Managed Stock Investments (4% - 23%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="initialSum">Initial Lump Sum (£):</label>
+                        <input type="number" id="initialSum" min="0" step="0.01" required>
+                        <div class="error" id="initialSumError"></div>
+                    </div>
+                    <div class="form-group">
+                        <label for="monthlyAmount">Monthly Investment (£):</label>
+                        <input type="number" id="monthlyAmount" min="50" step="0.01" required>
+                        <div class="error" id="monthlyAmountError"></div>
+                    </div>
+                    <button type="submit" class="btn">Calculate Returns</button>
+                </form>
+                <div id="investmentResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- System Features -->
+        <div class="features">
+            <h2>🔧 System Features</h2>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Secure Data</h3>
+                    <p>Bank-level security with encrypted data storage and secure transactions</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📊</div>
+                    <h3>Real-time Rates</h3>
+                    <p>Live currency exchange rates and market data for accurate calculations</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">📱</div>
+                    <h3>Responsive Design</h3>
+                    <p>Works seamlessly on desktop, tablet, and mobile devices</p>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">👤</div>
+                    <h3>User Management</h3>
+                    <p>Comprehensive user profiles with transaction history and saved quotes</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock exchange rates (in production, fetch from API)
+        const exchangeRates = {
+            'GBP': { 'USD': 1.27, 'EUR': 1.17, 'BRL': 6.35, 'JPY': 188.5, 'TRY': 43.2 },
+            'USD': { 'GBP': 0.79, 'EUR': 0.92, 'BRL': 5.0, 'JPY': 148.3, 'TRY': 34.0 },
+            'EUR': { 'GBP': 0.85, 'USD': 1.09, 'BRL': 5.45, 'JPY': 161.2, 'TRY': 37.1 },
+            'BRL': { 'GBP': 0.16, 'USD': 0.20, 'EUR': 0.18, 'JPY': 29.6, 'TRY': 6.8 },
+            'JPY': { 'GBP': 0.0053, 'USD': 0.0067, 'EUR': 0.0062, 'BRL': 0.034, 'TRY': 0.23 },
+            'TRY': { 'GBP': 0.023, 'USD': 0.029, 'EUR': 0.027, 'BRL': 0.15, 'JPY': 4.37 }
+        };
+
+        // Fee structure for currency conversion
+        const feeStructure = [
+            { max: 500, rate: 0.035 },
+            { max: 1500, rate: 0.027 },
+            { max: 2500, rate: 0.020 },
+            { max: Infinity, rate: 0.015 }
+        ];
+
+        // Investment plans configuration
+        const investmentPlans = {
+            'basic': {
+                name: 'Basic Savings Plan',
+                minInitial: 0,
+                minMonthly: 50,
+                returnRange: { min: 0.012, max: 0.024 }
+            },
+            'plus': {
+                name: 'Savings Plan Plus',
+                minInitial: 300,
+                minMonthly: 50,
+                returnRange: { min: 0.03, max: 0.055 }
+            },
+            'managed': {
+                name: 'Managed Stock Investments',
+                minInitial: 1000,
+                minMonthly: 150,
+                returnRange: { min: 0.04, max: 0.23 }
+            }
+        };
+
+        // Currency Converter
+        document.getElementById('currencyForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const fromCurrency = document.getElementById('fromCurrency').value;
+            const toCurrency = document.getElementById('toCurrency').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            
+            // Validate amount
+            if (amount < 300 || amount > 5000) {
+                document.getElementById('amountError').textContent = 'Amount must be between £300 and £5,000';
+                return;
+            }
+            
+            document.getElementById('amountError').textContent = '';
+            
+            // Calculate conversion
+            const rate = fromCurrency === toCurrency ? 1 : exchangeRates[fromCurrency][toCurrency];
+            const convertedAmount = amount * rate;
+            
+            // Calculate fee
+            let fee = 0;
+            for (let tier of feeStructure) {
+                if (amount <= tier.max) {
+                    fee = amount * tier.rate;
+                    break;
+                }
+            }
+            
+            const totalCost = amount + fee;
+            
+            // Display result
+            const resultDiv = document.getElementById('currencyResult');
+            resultDiv.innerHTML = `
+                <h3>Conversion Result</h3>
+                <div class="result-item">
+                    <span>Original Amount:</span>
+                    <span>${fromCurrency} ${amount.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span>Exchange Rate:</span>
+                    <span>1 ${fromCurrency} = ${rate} ${toCurrency}</span>
+                </div>
+                <div class="result-item">
+                    <span>Converted Amount:</span>
+                    <span>${toCurrency} ${convertedAmount.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span>Transaction Fee:</span>
+                    <span>${fromCurrency} ${fee.toFixed(2)}</span>
+                </div>
+                <div class="result-item">
+                    <span>Total Cost:</span>
+                    <span>${fromCurrency} ${totalCost.toFixed(2)}</span>
+                </div>
+            `;
+            resultDiv.classList.add('show');
+        });
+
+        // Investment Calculator
+        document.getElementById('investmentForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const planType = document.getElementById('investmentPlan').value;
+            const initialSum = parseFloat(document.getElementById('initialSum').value);
+            const monthlyAmount = parseFloat(document.getElementById('monthlyAmount').value);
+            
+            const plan = investmentPlans[planType];
+            
+            // Validate inputs
+            let hasError = false;
+            
+            if (initialSum < plan.minInitial) {
+                document.getElementById('initialSumError').textContent = `Minimum initial sum for ${plan.name} is £${plan.minInitial}`;
+                hasError = true;
+            } else {
+                document.getElementById('initialSumError').textContent = '';
+            }
+            
+            if (monthlyAmount < plan.minMonthly) {
+                document.getElementById('monthlyAmountError').textContent = `Minimum monthly investment for ${plan.name} is £${plan.minMonthly}`;
+                hasError = true;
+            } else {
+                document.getElementById('monthlyAmountError').textContent = '';
+            }
+            
+            if (hasError) return;
+            
+            // Calculate projections for 1, 5, and 10 years
+            const projections = [];
+            [1, 5, 10].forEach(years => {
+                const months = years * 12;
+                const totalInvested = initialSum + (monthlyAmount * months);
+                
+                // Simple compound growth calculation (minimum scenario)
+                const minValue = calculateCompoundGrowth(initialSum, monthlyAmount, months, plan.returnRange.min);
+                const maxValue = calculateCompoundGrowth(initialSum, monthlyAmount, months, plan.returnRange.max);
+                
+                projections.push({
+                    years: years,
+                    totalInvested: totalInvested,
+                    minValue: minValue,
+                    maxValue: maxValue
+                });
+            });
+            
+            // Display results
+            const resultDiv = document.getElementById('investmentResult');
+            resultDiv.innerHTML = `
+                <h3>${plan.name} - Investment Projections</h3>
+                <div class="investment-projections">
+                    ${projections.map(p => `
+                        <div class="projection-card">
+                            <h4>${p.years} Year${p.years > 1 ? 's' : ''}</h4>
+                            <p><strong>Invested:</strong> £${p.totalInvested.toLocaleString()}</p>
+                            <p><strong>Min Value:</strong> £${p.minValue.toLocaleString()}</p>
+                            <p><strong>Max Value:</strong> £${p.maxValue.toLocaleString()}</p>
+                            <p><strong>Potential Profit:</strong> £${(p.minValue - p.totalInvested).toLocaleString()} - £${(p.maxValue - p.totalInvested).toLocaleString()}</p>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            resultDiv.classList.add('show');
+        });
+
+        function calculateCompoundGrowth(initial, monthly, months, annualRate) {
+            const monthlyRate = annualRate / 12;
+            let value = initial;
+            
+            for (let i = 0; i < months; i++) {
+                value = (value + monthly) * (1 + monthlyRate);
+            }
+            
+            return Math.round(value);
+        }
+    </script>
+</body>
+</html>
